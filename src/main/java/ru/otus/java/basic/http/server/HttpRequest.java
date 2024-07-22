@@ -8,9 +8,18 @@ public class HttpRequest {
     private String uri;
     private HttpMethod method;
     private Map<String, String> parameters;
+    private String body;
+
+    public String getRoutingKey() {
+        return method + " " + uri;
+    }
 
     public String getUri() {
         return uri;
+    }
+
+    public String getBody() {
+        return body;
     }
 
     public HttpRequest(String rawRequest) {
@@ -33,6 +42,11 @@ public class HttpRequest {
                 this.parameters.put(keyValue[0], keyValue[1]);
             }
         }
+        if (method == HttpMethod.POST) {
+            this.body = rawRequest.substring(
+                    rawRequest.indexOf("\r\n\r\n") + 4
+            );
+        }
     }
 
     public boolean containsParameter(String key) {
@@ -46,6 +60,7 @@ public class HttpRequest {
     public void printInfo(boolean showRawRequest) {
         System.out.println("uri: " + uri);
         System.out.println("method: " + method);
+        System.out.println("body: " + body);
         if (showRawRequest) {
             System.out.println(rawRequest);
         }
