@@ -26,6 +26,7 @@ public class Dispatcher {
         this.processors.put("GET /calculator", new CalculatorRequestProcessor());
         this.processors.put("GET /items", new GetAllItemsProcessor(itemsRepository));
         this.processors.put("POST /items", new CreateNewItemProcessor(itemsRepository));
+        //this.processors.put("DELETE /items", new CreateNewItemProcessor(itemsRepository));
 
         this.defaultNotFoundRequestProcessor = new DefaultNotFoundRequestProcessor();
         this.defaultInternalServerErrorProcessor = new DefaultInternalServerErrorRequestProcessor();
