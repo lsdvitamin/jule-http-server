@@ -1,5 +1,6 @@
 package ru.otus.java.basic.http.server;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class HttpServer {
+    private static final Logger logger = LogManager.getLogger(HttpRequest.class.getName());
     private int port;
     private Dispatcher dispatcher;
     private ExecutorService executorService = Executors.newCachedThreadPool();
@@ -24,7 +26,7 @@ public class HttpServer {
 
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Сервер запущен на порту: " + port);
+            logger.info("Сервер запущен на порту: " + port);
             while (true) {
                 try {
                     Socket socket = serverSocket.accept();
@@ -47,16 +49,16 @@ public class HttpServer {
                                 dispatcher.execute(request, out);
 
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                logger.error(e.getMessage());
                             }
                         }
                     });
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 }

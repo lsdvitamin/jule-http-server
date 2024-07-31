@@ -70,15 +70,6 @@ public class HttpRequest {
     }
 
 
-    public void printInfo(boolean showRawRequest) {
-        System.out.println("uri: " + uri);
-        System.out.println("method: " + method);
-        System.out.println("body: " + body);
-        if (showRawRequest) {
-            System.out.println(rawRequest);
-        }
-    }
-
     public void loggingInfo() {
         logger.info("uri: " + uri);
         logger.info("method: " + method);
