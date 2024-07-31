@@ -52,7 +52,7 @@ public class Dispatcher {
                     jsonError;
             out.write(response.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("Некорректный запрос серверу" + e);
             defaultInternalServerErrorProcessor.execute(request, out);
         }
     }
