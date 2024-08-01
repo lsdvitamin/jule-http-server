@@ -54,11 +54,11 @@ public class HttpServer {
                         }
                     });
                 } catch (IOException e) {
-                    logger.error("Ошибка чтения сообщения" + e.getMessage());
+                    logger.error("Ошибка подключения к сокету" + e.getMessage());
                 }
             }
         } catch (IOException e) {
-            logger.error("Ошибка чтения сообщения" + e.getMessage());
+            logger.error("Ошибка запуска сервера" + e.getMessage());
         }
     }
 }
