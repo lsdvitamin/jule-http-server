@@ -1,13 +1,18 @@
 package ru.otus.java.basic.http.server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class HttpRequest {
+    private static final Logger logger = LogManager.getLogger(HttpRequest.class.getName());
     private String rawRequest;
     private String uri;
     private HttpMethod method;
     private Map<String, String> parameters;
+    private Map<String, String> headers;
     private String body;
 
     public String getRoutingKey() {
@@ -47,6 +52,13 @@ public class HttpRequest {
                     rawRequest.indexOf("\r\n\r\n") + 4
             );
         }
+        this.headers = new HashMap<>();
+        String[] headersArr = rawRequest.split("\\r?\\n");
+        String[] header;
+        for (int i = 1; i < headersArr.length; i++) {
+            header = headersArr[i].split(": ");
+            headers.put(header[0], header[1]);
+        }
     }
 
     public boolean containsParameter(String key) {
@@ -57,12 +69,15 @@ public class HttpRequest {
         return parameters.get(key);
     }
 
-    public void printInfo(boolean showRawRequest) {
-        System.out.println("uri: " + uri);
-        System.out.println("method: " + method);
-        System.out.println("body: " + body);
-        if (showRawRequest) {
-            System.out.println(rawRequest);
-        }
+
+    public void loggingInfo() {
+        logger.info("uri: " + uri);
+        logger.info("method: " + method);
+        logger.info("body: " + body);
+        logger.info(rawRequest);
     }
 }
+
+
+
+

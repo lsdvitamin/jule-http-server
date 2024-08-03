@@ -1,15 +1,23 @@
 package ru.otus.java.basic.http.server;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class HttpServer {
-    static ExecutorService executorService = Executors.newCachedThreadPool();
+    private static final Logger logger = LogManager.getLogger(HttpRequest.class.getName());
     private int port;
     private Dispatcher dispatcher;
+    private ExecutorService executorService = Executors.newCachedThreadPool();
 
     public HttpServer(int port) {
         this.port = port;
@@ -18,29 +26,39 @@ public class HttpServer {
 
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Сервер запущен на порту: " + port);
+            logger.info("Сервер запущен на порту: " + port);
             while (true) {
-                Socket socket = serverSocket.accept();
-                executorService.execute(() -> {
-                    byte[] buffer = new byte[8192];
-                    int n = 0;
-                    try {
-                        n = socket.getInputStream().read(buffer);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    String rawRequest = new String(buffer, 0, n);
-                    HttpRequest request = new HttpRequest(rawRequest);
-                    request.printInfo(true);
-                    try {
-                        dispatcher.execute(request, socket.getOutputStream());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                try {
+                    Socket socket = serverSocket.accept();
+                    executorService.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                                 OutputStream out = socket.getOutputStream()) {
+                                StringBuilder rawRequest = new StringBuilder();
+                                String line;
+                                while (in.ready() && !(line = in.readLine()).isEmpty()) {
+                                    rawRequest.append(line).append("\r\n");
+                                }
+                                if(rawRequest.toString().isEmpty()){
+                                    throw new RuntimeException("Пустой запрос Postman");
+                                }
+                                rawRequest.append("\r\n");
+                                HttpRequest request = new HttpRequest(rawRequest.toString());
+                                request.loggingInfo();
+                                dispatcher.execute(request, out);
+
+                            } catch (IOException e) {
+                                logger.error("Ошибка чтения сообщения", e);
+                            }
+                        }
+                    });
+                } catch (IOException e) {
+                    logger.error("Ошибка подключения к сокету", e);
+                }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error("Ошибка запуска сервера", e);
         }
     }
 }

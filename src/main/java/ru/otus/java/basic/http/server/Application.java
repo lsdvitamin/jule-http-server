@@ -1,7 +1,7 @@
 package ru.otus.java.basic.http.server;
 
 public class Application {
-    /*
+        /*
 
     Домашнее задание:
     - Избавиться от System.out.println, перейти на использование логирования
@@ -13,4 +13,5 @@ public class Application {
     public static void main(String[] args) {
         new HttpServer(8189).start();
     }
+
 }
