@@ -49,16 +49,16 @@ public class HttpServer {
                                 dispatcher.execute(request, out);
 
                             } catch (IOException e) {
-                                logger.error("Ошибка чтения сообщения" + e.getMessage());
+                                logger.error("Ошибка чтения сообщения", e);
                             }
                         }
                     });
                 } catch (IOException e) {
-                    logger.error("Ошибка подключения к сокету" + e.getMessage());
+                    logger.error("Ошибка подключения к сокету", e);
                 }
             }
         } catch (IOException e) {
-            logger.error("Ошибка запуска сервера" + e.getMessage());
+            logger.error("Ошибка запуска сервера", e);
         }
     }
 }
